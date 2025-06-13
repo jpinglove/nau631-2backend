@@ -6,6 +6,21 @@ const dotenv = require('dotenv');
 
 dotenv.config(); // Ensure .env variables are loaded
 
+
+console.log("--- Attempting to connect to DB ---");
+console.log("DATABASE_URL from environment:", process.env.DATABASE_URL); // 添加这行
+console.log("NODE_ENV:", process.env.NODE_ENV); // 查看当前环境
+
+if (!process.env.DATABASE_URL) {
+  console.error("FATAL ERROR: DATABASE_URL environment variable is not set.");
+  // 在生产环境中，如果 DATABASE_URL 未设置，应用不应该继续
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1); // 强制退出
+  }
+  // 对于非生产环境，或者如果您有备用方案，可以不退出
+}
+
+
 // Initialize Sequelize with the database connection string
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
@@ -14,10 +29,10 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialectOptions: {
     // Railway (and some other cloud providers) might require SSL
     // If you encounter connection issues, uncomment and adjust this:
-    ssl: {
-      require: true,
-      rejectUnauthorized: false // This might be needed for self-signed certificates or specific cloud provider setups
-    }
+    //ssl: {
+    //  require: true,
+    //  rejectUnauthorized: false // This might be needed for self-signed certificates or specific cloud provider setups
+    //}
   }
 });
 
